@@ -48,14 +48,30 @@ buildVectorFunctorInstance n = "instance Functor " ++ typeName ++ " where\n\
   where
     currentNames = take n names
     typeName = "Vector" ++ show n
+
+buildVectorApplicativeInstance n = "instance Applicative Vector" ++ show n ++ " where\n\
+\  pure = return\n\
+\  (<*>) = ap\n"
+
+-- buildVectorApplicativeInstance n = "instance Applicative " ++ typeName ++ " where\n\
+-- \  pure a = " ++ typeName ++ concat (replicate n " a") ++ "\n\
+-- \  " ++  apply typeName functionNames ++ " <*> " ++ apply typeName parameterNames ++ " = " ++
+   -- apply typeName (fmap parens $ applyZip functionNames parameterNames) ++"\n"
+  -- where
+    -- (parameterNames, functionNames) = splitAt n (take (n * 2) names)
+    -- typeName = "Vector" ++ show n
     
-buildVectorApplicativeInstance n = "instance Applicative " ++ typeName ++ " where\n\
-\  pure a = " ++ typeName ++ concat (replicate n " a") ++ "\n\
-\  " ++  apply typeName functionNames ++ " <*> " ++ apply typeName parameterNames ++ " = " ++
-   apply typeName (fmap parens $ applyZip functionNames parameterNames) ++"\n"
+buildVectorMonadInstance n = "instance Monad " ++ typeName ++ " where\n\
+\  return a = " ++ typeName ++ concat (replicate n " a") ++ "\n\
+\  " ++  apply typeName parameterNames ++ " >>= f' = case " ++ apply typeName (fmap parens $ applyMap "f'" parameterNames) ++ " of\n\
+\    " ++  apply typeName thingy ++ " -> " ++ apply typeName diagNames ++ "\n"
   where
-    (parameterNames, functionNames) = splitAt n (take (n * 2) names)
+    thingy = fmap (parens . apply typeName) blanks
+    blanks = [replaceAt dimN (diagNames !! dimN) (replicate n "_") | dimN <- [0..n-1]]
+    (parameterNames, diagNames) = splitAt n (take (n * 2) names)
     typeName = "Vector" ++ show n
+
+    --apply typeName parameterNames
 
 buildVectorFoldableInstance n = "instance Foldable " ++  typeName ++ " where\n" ++
   "  foldMap f' (" ++ apply typeName currentNames ++ ") = " ++ concat (intersperse " `mappend` " (applyMap "f'" currentNames)) ++ "\n"
@@ -147,6 +163,7 @@ dimNs = zipWith const [0..] dimensions
 vectorDataTypes = concatMap buildVectorDataType sizes
 vectorFunctorInstances = concatMap buildVectorFunctorInstance sizes
 vectorApplicativeInstances = concatMap buildVectorApplicativeInstance sizes
+vectorMonadInstances = concatMap buildVectorMonadInstance sizes
 vectorFoldableInstances = concatMap buildVectorFoldableInstance sizes
 vectorTraversableInstances = concatMap buildVectorTraversableInstance sizes
 vectorNumInstances = concatMap buildNumInstance sizes
@@ -167,7 +184,7 @@ header = "module Data.Instances where\n\n\
 \import Data.Traversable\n\
 \import Data.FixedList\n\n"
 
-buildStuff = header ++ vectorDataTypes ++ vectorFunctorInstances ++ vectorApplicativeInstances ++ vectorFoldableInstances ++
+buildStuff = header ++ vectorDataTypes ++ vectorFunctorInstances ++ vectorMonadInstances ++ vectorApplicativeInstances ++ vectorFoldableInstances ++
   vectorTraversableInstances ++ vectorNumInstances ++ vectorFractionalInstances ++ sizeClasses ++ 
   vectorSizeInstances ++ fixedListSizeInstances ++ dimensionClasses ++ vectorDimensionInstances ++ fixedListDimensionInstances
   

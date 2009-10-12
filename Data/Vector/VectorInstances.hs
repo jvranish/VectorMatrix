@@ -2,6 +2,7 @@
 module Data.Vector.VectorInstances where
 
 import Control.Applicative
+import Control.Monad
 import Data.Foldable
 import Data.Traversable
 import Data.Monoid
@@ -42,55 +43,120 @@ instance Functor Vector15 where
 instance Functor Vector16 where
   fmap f' (Vector16 a b c d e f g h i j k l m n o p) = Vector16 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) (f' l) (f' m) (f' n) (f' o) (f' p)
   
+instance Monad Vector1 where
+  return a = Vector1 a
+  Vector1 a >>= f' = case Vector1 (f' a) of
+    Vector1 (Vector1 b) -> Vector1 b
+instance Monad Vector2 where
+  return a = Vector2 a a
+  Vector2 a b >>= f' = case Vector2 (f' a) (f' b) of
+    Vector2 (Vector2 c _) (Vector2 _ d) -> Vector2 c d
+instance Monad Vector3 where
+  return a = Vector3 a a a
+  Vector3 a b c >>= f' = case Vector3 (f' a) (f' b) (f' c) of
+    Vector3 (Vector3 d _ _) (Vector3 _ e _) (Vector3 _ _ f) -> Vector3 d e f
+instance Monad Vector4 where
+  return a = Vector4 a a a a
+  Vector4 a b c d >>= f' = case Vector4 (f' a) (f' b) (f' c) (f' d) of
+    Vector4 (Vector4 e _ _ _) (Vector4 _ f _ _) (Vector4 _ _ g _) (Vector4 _ _ _ h) -> Vector4 e f g h
+instance Monad Vector5 where
+  return a = Vector5 a a a a a
+  Vector5 a b c d e >>= f' = case Vector5 (f' a) (f' b) (f' c) (f' d) (f' e) of
+    Vector5 (Vector5 f _ _ _ _) (Vector5 _ g _ _ _) (Vector5 _ _ h _ _) (Vector5 _ _ _ i _) (Vector5 _ _ _ _ j) -> Vector5 f g h i j
+instance Monad Vector6 where
+  return a = Vector6 a a a a a a
+  Vector6 a b c d e f >>= f' = case Vector6 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) of
+    Vector6 (Vector6 g _ _ _ _ _) (Vector6 _ h _ _ _ _) (Vector6 _ _ i _ _ _) (Vector6 _ _ _ j _ _) (Vector6 _ _ _ _ k _) (Vector6 _ _ _ _ _ l) -> Vector6 g h i j k l
+instance Monad Vector7 where
+  return a = Vector7 a a a a a a a
+  Vector7 a b c d e f g >>= f' = case Vector7 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) of
+    Vector7 (Vector7 h _ _ _ _ _ _) (Vector7 _ i _ _ _ _ _) (Vector7 _ _ j _ _ _ _) (Vector7 _ _ _ k _ _ _) (Vector7 _ _ _ _ l _ _) (Vector7 _ _ _ _ _ m _) (Vector7 _ _ _ _ _ _ n) -> Vector7 h i j k l m n
+instance Monad Vector8 where
+  return a = Vector8 a a a a a a a a
+  Vector8 a b c d e f g h >>= f' = case Vector8 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) of
+    Vector8 (Vector8 i _ _ _ _ _ _ _) (Vector8 _ j _ _ _ _ _ _) (Vector8 _ _ k _ _ _ _ _) (Vector8 _ _ _ l _ _ _ _) (Vector8 _ _ _ _ m _ _ _) (Vector8 _ _ _ _ _ n _ _) (Vector8 _ _ _ _ _ _ o _) (Vector8 _ _ _ _ _ _ _ p) -> Vector8 i j k l m n o p
+instance Monad Vector9 where
+  return a = Vector9 a a a a a a a a a
+  Vector9 a b c d e f g h i >>= f' = case Vector9 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) of
+    Vector9 (Vector9 j _ _ _ _ _ _ _ _) (Vector9 _ k _ _ _ _ _ _ _) (Vector9 _ _ l _ _ _ _ _ _) (Vector9 _ _ _ m _ _ _ _ _) (Vector9 _ _ _ _ n _ _ _ _) (Vector9 _ _ _ _ _ o _ _ _) (Vector9 _ _ _ _ _ _ p _ _) (Vector9 _ _ _ _ _ _ _ q _) (Vector9 _ _ _ _ _ _ _ _ r) -> Vector9 j k l m n o p q r
+instance Monad Vector10 where
+  return a = Vector10 a a a a a a a a a a
+  Vector10 a b c d e f g h i j >>= f' = case Vector10 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) of
+    Vector10 (Vector10 k _ _ _ _ _ _ _ _ _) (Vector10 _ l _ _ _ _ _ _ _ _) (Vector10 _ _ m _ _ _ _ _ _ _) (Vector10 _ _ _ n _ _ _ _ _ _) (Vector10 _ _ _ _ o _ _ _ _ _) (Vector10 _ _ _ _ _ p _ _ _ _) (Vector10 _ _ _ _ _ _ q _ _ _) (Vector10 _ _ _ _ _ _ _ r _ _) (Vector10 _ _ _ _ _ _ _ _ s _) (Vector10 _ _ _ _ _ _ _ _ _ t) -> Vector10 k l m n o p q r s t
+instance Monad Vector11 where
+  return a = Vector11 a a a a a a a a a a a
+  Vector11 a b c d e f g h i j k >>= f' = case Vector11 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) of
+    Vector11 (Vector11 l _ _ _ _ _ _ _ _ _ _) (Vector11 _ m _ _ _ _ _ _ _ _ _) (Vector11 _ _ n _ _ _ _ _ _ _ _) (Vector11 _ _ _ o _ _ _ _ _ _ _) (Vector11 _ _ _ _ p _ _ _ _ _ _) (Vector11 _ _ _ _ _ q _ _ _ _ _) (Vector11 _ _ _ _ _ _ r _ _ _ _) (Vector11 _ _ _ _ _ _ _ s _ _ _) (Vector11 _ _ _ _ _ _ _ _ t _ _) (Vector11 _ _ _ _ _ _ _ _ _ u _) (Vector11 _ _ _ _ _ _ _ _ _ _ v) -> Vector11 l m n o p q r s t u v
+instance Monad Vector12 where
+  return a = Vector12 a a a a a a a a a a a a
+  Vector12 a b c d e f g h i j k l >>= f' = case Vector12 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) (f' l) of
+    Vector12 (Vector12 m _ _ _ _ _ _ _ _ _ _ _) (Vector12 _ n _ _ _ _ _ _ _ _ _ _) (Vector12 _ _ o _ _ _ _ _ _ _ _ _) (Vector12 _ _ _ p _ _ _ _ _ _ _ _) (Vector12 _ _ _ _ q _ _ _ _ _ _ _) (Vector12 _ _ _ _ _ r _ _ _ _ _ _) (Vector12 _ _ _ _ _ _ s _ _ _ _ _) (Vector12 _ _ _ _ _ _ _ t _ _ _ _) (Vector12 _ _ _ _ _ _ _ _ u _ _ _) (Vector12 _ _ _ _ _ _ _ _ _ v _ _) (Vector12 _ _ _ _ _ _ _ _ _ _ w _) (Vector12 _ _ _ _ _ _ _ _ _ _ _ x) -> Vector12 m n o p q r s t u v w x
+instance Monad Vector13 where
+  return a = Vector13 a a a a a a a a a a a a a
+  Vector13 a b c d e f g h i j k l m >>= f' = case Vector13 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) (f' l) (f' m) of
+    Vector13 (Vector13 n _ _ _ _ _ _ _ _ _ _ _ _) (Vector13 _ o _ _ _ _ _ _ _ _ _ _ _) (Vector13 _ _ p _ _ _ _ _ _ _ _ _ _) (Vector13 _ _ _ q _ _ _ _ _ _ _ _ _) (Vector13 _ _ _ _ r _ _ _ _ _ _ _ _) (Vector13 _ _ _ _ _ s _ _ _ _ _ _ _) (Vector13 _ _ _ _ _ _ t _ _ _ _ _ _) (Vector13 _ _ _ _ _ _ _ u _ _ _ _ _) (Vector13 _ _ _ _ _ _ _ _ v _ _ _ _) (Vector13 _ _ _ _ _ _ _ _ _ w _ _ _) (Vector13 _ _ _ _ _ _ _ _ _ _ x _ _) (Vector13 _ _ _ _ _ _ _ _ _ _ _ y _) (Vector13 _ _ _ _ _ _ _ _ _ _ _ _ z) -> Vector13 n o p q r s t u v w x y z
+instance Monad Vector14 where
+  return a = Vector14 a a a a a a a a a a a a a a
+  Vector14 a b c d e f g h i j k l m n >>= f' = case Vector14 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) (f' l) (f' m) (f' n) of
+    Vector14 (Vector14 o _ _ _ _ _ _ _ _ _ _ _ _ _) (Vector14 _ p _ _ _ _ _ _ _ _ _ _ _ _) (Vector14 _ _ q _ _ _ _ _ _ _ _ _ _ _) (Vector14 _ _ _ r _ _ _ _ _ _ _ _ _ _) (Vector14 _ _ _ _ s _ _ _ _ _ _ _ _ _) (Vector14 _ _ _ _ _ t _ _ _ _ _ _ _ _) (Vector14 _ _ _ _ _ _ u _ _ _ _ _ _ _) (Vector14 _ _ _ _ _ _ _ v _ _ _ _ _ _) (Vector14 _ _ _ _ _ _ _ _ w _ _ _ _ _) (Vector14 _ _ _ _ _ _ _ _ _ x _ _ _ _) (Vector14 _ _ _ _ _ _ _ _ _ _ y _ _ _) (Vector14 _ _ _ _ _ _ _ _ _ _ _ z _ _) (Vector14 _ _ _ _ _ _ _ _ _ _ _ _ a1 _) (Vector14 _ _ _ _ _ _ _ _ _ _ _ _ _ b1) -> Vector14 o p q r s t u v w x y z a1 b1
+instance Monad Vector15 where
+  return a = Vector15 a a a a a a a a a a a a a a a
+  Vector15 a b c d e f g h i j k l m n o >>= f' = case Vector15 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) (f' l) (f' m) (f' n) (f' o) of
+    Vector15 (Vector15 p _ _ _ _ _ _ _ _ _ _ _ _ _ _) (Vector15 _ q _ _ _ _ _ _ _ _ _ _ _ _ _) (Vector15 _ _ r _ _ _ _ _ _ _ _ _ _ _ _) (Vector15 _ _ _ s _ _ _ _ _ _ _ _ _ _ _) (Vector15 _ _ _ _ t _ _ _ _ _ _ _ _ _ _) (Vector15 _ _ _ _ _ u _ _ _ _ _ _ _ _ _) (Vector15 _ _ _ _ _ _ v _ _ _ _ _ _ _ _) (Vector15 _ _ _ _ _ _ _ w _ _ _ _ _ _ _) (Vector15 _ _ _ _ _ _ _ _ x _ _ _ _ _ _) (Vector15 _ _ _ _ _ _ _ _ _ y _ _ _ _ _) (Vector15 _ _ _ _ _ _ _ _ _ _ z _ _ _ _) (Vector15 _ _ _ _ _ _ _ _ _ _ _ a1 _ _ _) (Vector15 _ _ _ _ _ _ _ _ _ _ _ _ b1 _ _) (Vector15 _ _ _ _ _ _ _ _ _ _ _ _ _ c1 _) (Vector15 _ _ _ _ _ _ _ _ _ _ _ _ _ _ d1) -> Vector15 p q r s t u v w x y z a1 b1 c1 d1
+instance Monad Vector16 where
+  return a = Vector16 a a a a a a a a a a a a a a a a
+  Vector16 a b c d e f g h i j k l m n o p >>= f' = case Vector16 (f' a) (f' b) (f' c) (f' d) (f' e) (f' f) (f' g) (f' h) (f' i) (f' j) (f' k) (f' l) (f' m) (f' n) (f' o) (f' p) of
+    Vector16 (Vector16 q _ _ _ _ _ _ _ _ _ _ _ _ _ _ _) (Vector16 _ r _ _ _ _ _ _ _ _ _ _ _ _ _ _) (Vector16 _ _ s _ _ _ _ _ _ _ _ _ _ _ _ _) (Vector16 _ _ _ t _ _ _ _ _ _ _ _ _ _ _ _) (Vector16 _ _ _ _ u _ _ _ _ _ _ _ _ _ _ _) (Vector16 _ _ _ _ _ v _ _ _ _ _ _ _ _ _ _) (Vector16 _ _ _ _ _ _ w _ _ _ _ _ _ _ _ _) (Vector16 _ _ _ _ _ _ _ x _ _ _ _ _ _ _ _) (Vector16 _ _ _ _ _ _ _ _ y _ _ _ _ _ _ _) (Vector16 _ _ _ _ _ _ _ _ _ z _ _ _ _ _ _) (Vector16 _ _ _ _ _ _ _ _ _ _ a1 _ _ _ _ _) (Vector16 _ _ _ _ _ _ _ _ _ _ _ b1 _ _ _ _) (Vector16 _ _ _ _ _ _ _ _ _ _ _ _ c1 _ _ _) (Vector16 _ _ _ _ _ _ _ _ _ _ _ _ _ d1 _ _) (Vector16 _ _ _ _ _ _ _ _ _ _ _ _ _ _ e1 _) (Vector16 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ f1) -> Vector16 q r s t u v w x y z a1 b1 c1 d1 e1 f1
+
 instance Applicative Vector1 where
-  pure a = Vector1 a
-  Vector1 b <*> Vector1 a = Vector1 (b a)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector2 where
-  pure a = Vector2 a a
-  Vector2 c d <*> Vector2 a b = Vector2 (c a) (d b)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector3 where
-  pure a = Vector3 a a a
-  Vector3 d e f <*> Vector3 a b c = Vector3 (d a) (e b) (f c)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector4 where
-  pure a = Vector4 a a a a
-  Vector4 e f g h <*> Vector4 a b c d = Vector4 (e a) (f b) (g c) (h d)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector5 where
-  pure a = Vector5 a a a a a
-  Vector5 f g h i j <*> Vector5 a b c d e = Vector5 (f a) (g b) (h c) (i d) (j e)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector6 where
-  pure a = Vector6 a a a a a a
-  Vector6 g h i j k l <*> Vector6 a b c d e f = Vector6 (g a) (h b) (i c) (j d) (k e) (l f)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector7 where
-  pure a = Vector7 a a a a a a a
-  Vector7 h i j k l m n <*> Vector7 a b c d e f g = Vector7 (h a) (i b) (j c) (k d) (l e) (m f) (n g)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector8 where
-  pure a = Vector8 a a a a a a a a
-  Vector8 i j k l m n o p <*> Vector8 a b c d e f g h = Vector8 (i a) (j b) (k c) (l d) (m e) (n f) (o g) (p h)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector9 where
-  pure a = Vector9 a a a a a a a a a
-  Vector9 j k l m n o p q r <*> Vector9 a b c d e f g h i = Vector9 (j a) (k b) (l c) (m d) (n e) (o f) (p g) (q h) (r i)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector10 where
-  pure a = Vector10 a a a a a a a a a a
-  Vector10 k l m n o p q r s t <*> Vector10 a b c d e f g h i j = Vector10 (k a) (l b) (m c) (n d) (o e) (p f) (q g) (r h) (s i) (t j)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector11 where
-  pure a = Vector11 a a a a a a a a a a a
-  Vector11 l m n o p q r s t u v <*> Vector11 a b c d e f g h i j k = Vector11 (l a) (m b) (n c) (o d) (p e) (q f) (r g) (s h) (t i) (u j) (v k)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector12 where
-  pure a = Vector12 a a a a a a a a a a a a
-  Vector12 m n o p q r s t u v w x <*> Vector12 a b c d e f g h i j k l = Vector12 (m a) (n b) (o c) (p d) (q e) (r f) (s g) (t h) (u i) (v j) (w k) (x l)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector13 where
-  pure a = Vector13 a a a a a a a a a a a a a
-  Vector13 n o p q r s t u v w x y z <*> Vector13 a b c d e f g h i j k l m = Vector13 (n a) (o b) (p c) (q d) (r e) (s f) (t g) (u h) (v i) (w j) (x k) (y l) (z m)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector14 where
-  pure a = Vector14 a a a a a a a a a a a a a a
-  Vector14 o p q r s t u v w x y z a1 b1 <*> Vector14 a b c d e f g h i j k l m n = Vector14 (o a) (p b) (q c) (r d) (s e) (t f) (u g) (v h) (w i) (x j) (y k) (z l) (a1 m) (b1 n)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector15 where
-  pure a = Vector15 a a a a a a a a a a a a a a a
-  Vector15 p q r s t u v w x y z a1 b1 c1 d1 <*> Vector15 a b c d e f g h i j k l m n o = Vector15 (p a) (q b) (r c) (s d) (t e) (u f) (v g) (w h) (x i) (y j) (z k) (a1 l) (b1 m) (c1 n) (d1 o)
+  pure = return
+  (<*>) = ap
 instance Applicative Vector16 where
-  pure a = Vector16 a a a a a a a a a a a a a a a a
-  Vector16 q r s t u v w x y z a1 b1 c1 d1 e1 f1 <*> Vector16 a b c d e f g h i j k l m n o p = Vector16 (q a) (r b) (s c) (t d) (u e) (v f) (w g) (x h) (y i) (z j) (a1 k) (b1 l) (c1 m) (d1 n) (e1 o) (f1 p)
-  
+  pure = return
+  (<*>) = ap
+
 instance Foldable Vector1 where
   foldMap f' (Vector1 a) = f' a
 instance Foldable Vector2 where

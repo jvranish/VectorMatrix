@@ -1,18 +1,139 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE  UndecidableInstances #-}
+{-# LANGUAGE  RankNTypes #-}
+{-# LANGUAGE NoMonomorphismRestriction #-}
 module Data.Matrix where
 
 import Control.Applicative
+import Control.Monad
 import Data.Monoid
 import Data.Foldable
 import Data.Traversable
 import Data.List hiding (mapAccumL, sum, concat)
 
-import Data.ZipList
+import Data.Lenses
+import Data.ZipList hiding (diagonal)
 import Data.Vector
 import Control.Monad.State hiding (sequence_, sequence)
 
-import Prelude hiding (sum, concat, snd, sequence_, sequence)
+import Prelude hiding (sum, concat, sequence_, sequence)
 
-data Matrix row col e = Matrix (row (col e)) deriving (Show, Eq, Ord)
+data Matrix row col a = Matrix { unMatrix :: (row (col a))} deriving (Show, Eq, Ord)
+
+inMatrix :: (t (f a) -> row (col b)) -> Matrix t f a -> Matrix row col b
+inMatrix f (Matrix a) = Matrix (f a)
+
+transpose :: (Traversable t, Applicative f) =>  Matrix t f a -> Matrix f t a
+transpose m = inMatrix sequenceA m
+
+mul :: (Traversable f, Num a, Num (f a), Applicative row, Applicative col, Traversable col) =>
+       Matrix row f a -> Matrix f col a -> Matrix row col a
+mul (Matrix a) (Matrix b) = Matrix $ traverse (liftA2 dot a . pure) (sequenceA b)
+
+diagonal :: (Monad f) => Matrix f f a -> f a
+diagonal (Matrix a) = join a
+
+identity :: (Num a, Traversable f, Monad f, Applicative f) => Matrix f f a
+identity = setDiagonal 1 (pure 0)
+
+setDiagonal :: (Traversable f, Monad f) => a -> Matrix f f a -> Matrix f f a
+setDiagonal x m = (put x `to` diagonal) `from` m
+
+instance (Functor row, Functor col) => Functor (Matrix row col) where
+  fmap f (Matrix a) = Matrix $ fmap (fmap f) a
+
+instance (Monad row, Monad col, Applicative row, Applicative col, Traversable row, Traversable col) => Monad (Matrix row col) where
+  return = Matrix . return . return
+  (Matrix m) >>= f = Matrix $ m >>= sequenceA . join . fmap (sequenceA . unMatrix . f)
+  --Matrix a <*> Matrix b = Matrix $ pure (<*>) <*> a <*> b
+
+instance (Applicative row, Applicative col) => Applicative (Matrix row col) where
+  -- # normally I would just use the monad instance functions 'return' and 'ap'
+  -- # this is equivalent to the monad version, but doesn't require row and col to be instances of monad
+  --pure = return
+  --(<*>) = ap
+  pure = Matrix . pure . pure
+  Matrix a <*> Matrix b = Matrix $ pure (<*>) <*> a <*> b
+
+instance (Foldable row, Foldable col) => Foldable (Matrix row col) where
+  foldMap f (Matrix a) = foldMap (foldMap f) a
+
+instance (Traversable row, Traversable col) => Traversable (Matrix row col) where
+  traverse f (Matrix a) = Matrix <$> traverse (traverse f) a
+
+
+instance (Num a, Applicative row, Applicative col, Eq (row (col a)), Show (row (col a))) => Num (Matrix row col a) where
+  a + b = pure (+) <*> a <*> b
+  a - b = pure (-) <*> a <*> b
+  a * b = pure (*) <*> a <*> b
+  negate a = pure negate <*> a
+  abs a = pure abs <*> a
+  signum = fmap signum
+  fromInteger = pure . fromInteger
+
+instance (Fractional a, Applicative row, Applicative col, Eq (row (col a)), Show (row (col a))) => Fractional (Matrix row col a) where
+  a / b = pure (/) <*> a <*> b
+  recip a = pure 1 / a
+  fromRational = pure . fromRational
+
+
+a = Matrix (Vector3 (Vector3 0 1 3)
+                    (Vector3 4 5 6)
+                    (Vector3 7 8 9) )
+g 9 = Matrix (Vector3 (Vector3 0 0 0)
+                      (Vector3 0 0 0)
+                      (Vector3 0 0 1) )
+g x = Matrix (Vector3 (Vector3 0 0 0)
+                      (Vector3 0 0 0)
+                      (Vector3 0 0 0) )
+--  xs >>=
+--m (m a) f
+--pure f
+{-
+
+m a -> (a -> m b) -> m b
+t (f a1) -> (a1 -> t (f a)) -> t (f a)
+
+
+m (n a) -> (a -> m (n b)) -> m (n b)
+n a -> (n a -> m (n b)) -> m (n b)
+m >>= g
+
+n a -> m (n b)
+g x = sequenceA . join . fmap (sequenceA . f) x
+sequenceA
+
+m a -> (a -> m b) -> m b
+>>=
+>>=
+a -> Matrix Vector2 Vector3 b
+a -> Vector2 b
+a -> Vector3 b
+
+Matrix:
+transpose
+inverse
+det
+mul
+scale
+identity
+diagonal
+make transorm
+ translate
+ rotate
+ scale
+make projection
+ ortho
+ perspective
+
+Vector
+gradient
+divergence
+curl
+
+
+Vector ()
+-}
 
 
 {-

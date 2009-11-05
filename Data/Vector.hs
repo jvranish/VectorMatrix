@@ -15,6 +15,7 @@ module Data.Vector ( dot
                    , module Data.Vector.Classes
                    , module Data.Vector.DataTypes
                    , module Data.Vector.Lenses
+                   , module Data.Vector.VectorInstances
                    ) where
 
 import Control.Applicative
@@ -23,7 +24,7 @@ import Data.Vector.DataTypes
 import Data.Vector.Classes
 import Data.Vector.Lenses
 import Data.Vector.VectorInstances()
-import Data.Vector.FixedListInstances()
+--import Data.Vector.FixedListInstances()
 
 import Prelude hiding (sum)
 

@@ -1,4 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
+{- |
+
+#TODO
+  explain how to use lenses to manipulate fields in the matrix
+-}
 module Data.Matrix ( unMatrix
                    , showMatrix
                    , inMatrix
@@ -82,32 +87,40 @@ instance (Fractional a, Applicative row, Applicative col, Eq (row (col a)), Show
   recip a = pure 1 / a
   fromRational = pure . fromRational
 
+-- | Transposes matrix
 transpose :: (Traversable t, Applicative f) =>  Matrix t f a -> Matrix f t a
 transpose m = inMatrix sequenceA m
 
+-- | Matrix multiplication function
 mul :: (Traversable f, Num a, Num (f a), Applicative row, Applicative col, Traversable col) =>
        Matrix row f a -> Matrix f col a -> Matrix row col a
-mul (Matrix a) (Matrix b) = Matrix $ traverse (liftA2 dot a . pure) (sequenceA b)
+mul (Matrix a) (Matrix b) = Matrix $ traverse (liftA2 dot a . pure) (sequenceA b) -- Oh yeah!
 
+-- | Returns diagonal vector of matrix
 diagonal :: (Monad f) => Matrix f f a -> f a
 diagonal (Matrix a) = join a
 
+-- | Returns the identity matrix (the size of the matrix is determined by the type)
 identity :: (Num a, Traversable f, Monad f, Applicative f) => Matrix f f a
 identity = setDiagonal 1 (pure 0)
 
+-- | Set the diagonal of the matrix to a vector
 setDiagonal :: (Traversable f, Monad f) => a -> Matrix f f a -> Matrix f f a
 setDiagonal x m = (put x `to` diagonal) `from` m
 
+-- | Calculates the determinate of a matrix (uses gaussian elimination, so it should scale well)
 det :: (Fractional a, Foldable f, Functor f) => Matrix f f a -> a
 det a = product $ zipWith id diagonalGets $ whatever $ gaussianElimination $ toMatrixList a
 
+-- | Calculates the inverse of a matrix. Will return Nothing if the given matrix has no inverse.
+--   (uses gaussian elimination, so it should scale well)
 inv :: ( Fractional a,
          Traversable row, Monad row, Applicative row,
          Traversable col1, Applicative col1) =>
        Matrix row col1 a -> Maybe (Matrix row row a)
 inv a = toMaybe $ fmap snd $ gaussElim a identity
 
-
+-- | Performs gauss-jordan elimination on a matrix with an augmented matrix
 gaussElim :: ( Traversable row, Applicative row,
         Traversable col1, Applicative col1,
         Traversable col2, Applicative col2,

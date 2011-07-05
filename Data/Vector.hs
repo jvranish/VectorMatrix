@@ -1,3 +1,16 @@
+{- |
+
+#TODO
+ -  basic rules recommended datatypes
+ -  explain why lists don't work
+ -  show how to use lenses with vector
+ -  show how to use pack,unpack,vx, etc..
+ -  show how to use Fixedlist
+ -  show how to use custom datatype
+ -  explain what's missing
+
+-}
+
 module Data.Vector ( dot
                    , mag
                    , normalize
@@ -12,10 +25,11 @@ module Data.Vector ( dot
                    , positiveAngle2
                    , rotate2
                    , cross3
-                   , module Data.Vector.Classes
                    , module Data.Vector.DataTypes
+                   , module Data.Vector.Classes
                    , module Data.Vector.Lenses
                    , module Data.Vector.VectorInstances
+                   , module Data.Vector.FixedListInstances
                    ) where
 
 import Control.Applicative
@@ -24,7 +38,7 @@ import Data.Vector.DataTypes
 import Data.Vector.Classes
 import Data.Vector.Lenses
 import Data.Vector.VectorInstances()
---import Data.Vector.FixedListInstances()
+import Data.Vector.FixedListInstances()
 
 import Prelude hiding (sum)
 
